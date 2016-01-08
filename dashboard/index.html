@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8"> 
+        <meta charset="utf-8">
+        <title>Mailroom | Dashboard</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="assets/css/bootstrap.css" rel="stylesheet">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+        
+        <!--[if lt IE 9]>
+          <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        
+		<link href="assets/css/google-plus.css" rel="stylesheet">
+		<script type="text/javascript" src="assets/js/jquery.js"></script>
+		<script type="text/javascript" src="assets/js/bootstrap.js"></script>
+		<script src="../assets/plugins/bootbox.min.js"></script>
+		<script src="../assets/plugins/jspdf.min.js"></script>
+		<script src="http://mrrio.github.io/jsPDF/dist/jspdf.debug.js"></script>
+		<script type="text/javascript" src="../classes/newcommon.js"></script>
+		
+		<script type="text/javascript">
+				if (getCookie('username')=='GUEST' ||  getCookie('username') ==''|| getCookie('username')==null){ window.location.replace('../'); }	
+				
+				//function demoFromHTML(code) {
+				//		var pdf = new jsPDF('p', 'pt', 'letter');
+				//		// source can be HTML-formatted string, or a reference
+				//		// to an actual DOM element from which the text will be scraped.
+				//		var dataR=testAjax("GET","","../api/code/".concat(code),"application/json")
+				//		dataR.success(function(data){
+				//		    $('#content').load('_popups.html #themail',function(){
+				//				$.each(data.response,function(i,item){
+				//					$("#sender").html(item.sender);
+				//					$("p#branch").html(item.branch)
+				//					$("#recipient").html(item.recipient);
+				//					$("#organization").html(item.organization)
+				//					$("p#dept").html(item.dept)
+				//					$("p#postal").html(item.postal)
+				//					switch(item.type){
+				//						case "0":
+				//							$("p#type").html("Organization");
+				//							break;
+				//						case "1":
+				//							$("p#type").html("Other")
+				//							break;
+				//					}
+				//					switch(item.category){
+				//						case "0":
+				//							$("p#category").html("Envelope")
+				//							break;
+				//						case "1":
+				//							$("p#category").html("Bag")
+				//							break;
+				//					}
+				//					switch(item.state){
+				//						case "0":
+				//							$("p#state").html("Submitted")
+				//							break;
+				//						case "1":
+				//							$("p#state").html("Sighted")
+				//							break;
+				//						case "2":
+				//							$("p#state").html("Missing")
+				//							break;
+				//						case "3":
+				//							$("p#state").html("Exception")
+				//							break;
+				//						case "4":
+				//							$("p#state").html("Dispatched")
+				//							break;
+				//						case "5":
+				//							$("p#state").html("Delivered")
+				//							break;
+				//						case "6":
+				//							$("p#state").html("Received")
+				//							break;
+				//					}
+				//					$("p#code").html(item.code)
+				//				})
+				//				var pdfcontent=$( "#content" ).html();$( "#content" ).children().remove();
+				//			})
+				//		})
+				//		
+				//		source = pdfcontent[0];
+				//
+				//		// we support special element handlers. Register them with jQuery-style 
+				//		// ID selector for either ID or node name. ("#iAmID", "div", "span" etc.)
+				//		// There is no support for any other type of selectors 
+				//		// (class, of compound) at this time.
+				//		specialElementHandlers = {
+				//			// element with id of "bypass" - jQuery style selector
+				//			'#bypassme': function (element, renderer) {
+				//				// true = "handled elsewhere, bypass text extraction"
+				//				return true
+				//			}
+				//		};
+				//		margins = {
+				//			top: 80,
+				//			bottom: 60,
+				//			left: 40,
+				//			width: 522
+				//		};
+				//		// all coords and widths are in jsPDF instance's declared units
+				//		// 'inches' in this case
+				//		pdf.fromHTML(
+				//		source, // HTML string or DOM elem ref.
+				//		margins.left, // x coord
+				//		margins.top, { // y coord
+				//			'width': margins.width, // max width of content on PDF
+				//			'elementHandlers': specialElementHandlers
+				//		},
+				//
+				//		function (dispose) {
+				//			// dispose: object with X, Y of the last line add to the PDF 
+				//			//          this allow the insertion of new lines after html
+				//			pdf.save('Test.pdf');
+				//		}, margins);
+				//	}
+	
+	
+				
+				function generateRefNo(){
+					var text = "";
+					var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+					for( var i=0; i < 5; i++ )
+						text += possible.charAt(Math.floor(Math.random() * possible.length));
+					return text+Date.now();
+				}
+				function updateClock ( )
+					{
+					var currentTime = new Date ( );
+					var currentHours = currentTime.getHours ( );
+					var currentMinutes = currentTime.getMinutes ( );
+					var currentSeconds = currentTime.getSeconds ( );
+				
+					// Pad the minutes and seconds with leading zeros, if required
+					currentMinutes = ( currentMinutes < 10 ? "0" : "" ) + currentMinutes;
+					currentSeconds = ( currentSeconds < 10 ? "0" : "" ) + currentSeconds;
+				
+					// Choose either "AM" or "PM" as appropriate
+					var timeOfDay = ( currentHours < 12 ) ? "AM" : "PM";
+				
+					// Convert the hours component to 12-hour format if needed
+					currentHours = ( currentHours > 12 ) ? currentHours - 12 : currentHours;
+				
+					// Convert an hours component of "0" to "12"
+					currentHours = ( currentHours == 0 ) ? 12 : currentHours;
+				
+					// Compose the string for display
+					var currentTimeString = currentHours + ":" + currentMinutes + ":" + currentSeconds + " " + timeOfDay;
+					
+					
+					$("h4#time span").html(currentTimeString);
+						
+				}
+		
+			$(document).ready(function() {
+				var d = new Date();
+				$('h2#date span').html(d.toDateString());
+				setInterval('updateClock()', 1000);
+				$('span.username').html(getCookie('username'))
+				
+				
+				
+	
+	
+	
+	
+	
+
+
+				$('.checkmailstate').on('click',function(){
+				    $('#checkmailstate').removeClass('hidden');
+					$('#checkmailstateform').on('submit',function(){
+						if($('#confirmation').val()==''){return false;}
+						var mform = $(this);
+						var fdata=JSON.stringify(mform.serializeObject());
+						var m_method=mform.find('#m_method').val();var response='';
+						var dataR = testAjax( m_method, fdata,"../api/mails/state/".concat($('#confirmation').val())," application/json");
+						dataR.success(function (data) {
+							$('form')[0].reset();
+							$.each(data.response,function(i,item){
+								switch(item.state){
+								    case "0":
+										$('h4.mailstate').html("SUBMITTED")
+										break;
+								    case "1":
+										$('h4.mailstate').html("SIGHTED")
+										break;
+								    case "2":
+										$('h4.mailstate').html("MISSING")
+										break;
+								    case "3":
+										$('h4.mailstate').html("EXCEPTION")
+										break;
+								    case "4":
+										$('h4.mailstate').html("DISPATCHED")
+										break;
+								    case "5":
+										$('h4.mailstate').html("DELIVERED")
+										break;
+								    case "6":
+										$('h4.mailstate').html("RECEIVED")
+										break;
+								}
+							})
+						});
+						return false;
+					})
+				})
+				$('.confirmreceivedmail').on('click',function(){
+				    $('#confirmreceivedmail').removeClass('hidden');
+					$('#confirmreceivedmailform').on('submit',function(){
+						if($('#confirm').val()==''){return false;}
+						var mform = $(this);
+						var fdata=JSON.stringify(mform.serializeObject());
+						var m_method=mform.find('#m_method').val();var response='';
+						var dataR = testAjax( m_method, fdata, mform.find('#m_url').val().concat($('#confirm').val())," application/json");
+						dataR.success(function (data) {
+							$('form')[0].reset();
+							$( "#ppu_menu" ).load( "_popups.html #themail", function(e) {
+								$.each(data.response,function(i,item){
+										$("#sender").html(item.sender);
+										$("p#branch").html(item.branch)
+										$("#recipient").html(item.recipient);
+										$("#organization").html(item.organization)
+										$("p#dept").html(item.dept)
+										$("p#postal").html(item.postal)
+										switch(item.type){
+											case "0":
+												$("p#type").html("Organization");
+												break;
+											case "1":
+												$("p#type").html("Other")
+												break;
+										}
+										switch(item.category){
+											case "0":
+												$("p#category").html("Envelope")
+												break;
+											case "1":
+												$("p#category").html("Bag")
+												break;
+										}
+										switch(item.state){
+											case "0":
+												$("p#state").html("Submitted")
+												break;
+											case "1":
+												$("p#state").html("Sighted")
+												break;
+											case "2":
+												$("p#state").html("Missing")
+												break;
+											case "3":
+												$("p#state").html("Exception")
+												break;
+											case "4":
+												$("p#state").html("Dispatched")
+												break;
+											case "5":
+												$("p#state").html("Delivered")
+												break;
+											case "6":
+												$("p#state").html("Received")
+												break;
+										}
+										$("p#code").html(item.code)
+								})
+								var PPU_message=$( "#ppu_menu" ).html();$( "#ppu_menu" ).children().remove();/*DO NOTY STORE UNNECESSARY DATA*/
+								bootbox.dialog({
+									title: 'MAIL DETAILS',
+									message:PPU_message,
+									 buttons: {
+										success: {
+											label: "Received <i class='fa fa-thums-up'></i>",
+											className: "btn-success",
+											callback: function (event) {
+												var mform = $(this).find('.dlgform');
+												var jsondata = {"confirmation":$('#confirmation').val()};
+												var fdata=JSON.stringify(jsondata);
+												var dataR = testAjax("PUT",fdata,"../api/mails/recipient/confirm","application/json");
+												dataR.success(function (data) {
+													$('form')[0].reset();
+													switch (data.response){
+														case "fail": 
+															$('#confirmreceivedmail .alert-danger').removeClass('hidden');
+															break;
+														case "success":
+															$('#confirmreceivedmailform').addClass('hidden');
+															$('#confirmreceivedmail .alert-success').removeClass('hidden');
+															break;
+													}
+												});
+											}
+										}
+									} 
+								});
+							});
+						});
+						return false;
+					})
+				})
+				
+				$('.newmail').on('click',function(){
+					$('#mailtypeandcatcard').removeClass('hidden');
+					$('#dest_type').change(function(){
+						var dest_type = $(this).find('option:selected').val();
+						if (dest_type=="-1") {return false;}
+						else{
+						    $('#mailcatdiv').removeClass('hidden');
+							$('#mail_cat').change(function(){
+								var mail_cat = $(this).find('option:selected').val();
+								if (mail_cat=="-1") {return false;}
+								else{
+									$('#refnocard').removeClass('hidden');
+									var ref = generateRefNo();
+									$('#refnocard p').html(ref);
+									$('#maildetailscard').removeClass('hidden');
+									$('#receipientdetailscard').removeClass('hidden');
+									$('#submitform').on('submit',function(event){
+										event.preventDefault();
+										$('#ref').val(ref);
+										$('#seal').val($('#sealno').val())
+										$('#type').val($('#dest_type').val())
+										$('#category').val($('#mail_cat').val())
+										
+										var mform = $(this);
+										var fdata=JSON.stringify(mform.serializeObject());
+										console.log(fdata);
+										var m_method=mform.find('#m_method').val();var response='';
+										var dataR = testAjax( m_method, fdata, mform.find('#m_url').val()," application/json");
+										dataR.success(function (data) {
+											$('form')[0].reset();
+											switch (data.response){
+												case "fail": 
+													$('.alert-danger').removeClass('hidden');
+													break;
+												case "success":
+												    $('#mailtypeandcatcard').addClass('hidden');
+												    $('#mailcatdiv').addClass('hidden');
+												    $('#refnocard').addClass('hidden');
+												    $('#maildetailscard').addClass('hidden');
+												    $('#receipientdetailscard').addClass('hidden');
+													$('.alert-success').removeClass('hidden');
+													
+													$('#render_me').load('_popups.html #themail', function(e){
+														$("#sender").html(item.sender);
+														$("#recipient").html(item.recipient);
+														$("#organization").html(item.organization)
+														$("#branch").html(item.branch)
+														$("#dept").html(item.dept)
+														$("#postal").html(item.postal)
+														switch(item.type){
+															case "0":
+																$("#type").html("Organization");
+																break;
+															case "1":
+																$("#type").html("Other")
+																break;
+														}
+														switch(item.category){
+															case "0":
+																$("#category").html("Envelope")
+																break;
+															case "1":
+																$("#category").html("Bag")
+																break;
+														}
+														switch(item.state){
+															case "0":
+																$("#state").html("Submitted")
+																break;
+															case "1":
+																$("#state").html("Sighted")
+																break;
+															case "2":
+																$("#state").html("Missing")
+																break;
+															case "3":
+																$("#state").html("Exception")
+																break;
+															case "4":
+																$("#state").html("Dispatched")
+																break;
+															case "5":
+																$("#state").html("Delivered")
+																break;
+															case "6":
+																$("#state").html("Received")
+																break;
+														}
+														$("#code").html(item.code)
+												    })
+													break;
+											}
+										});
+										return false;
+									})
+								}
+							});
+						}
+				    });
+				})
+			});
+		</script>
+    </head>
+    
+    <body class="">
+        
+        <div class="navbar navbar-fixed-top header">
+ 	<div class="col-md-12">
+        <div class="navbar-header">
+          
+          <a href="./" class="navbar-brand" style="font-weight:bold;">Mailroom > <small style="font-weight:100">User Dashboard</small></a>
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse1">
+          <i class="fa fa-bars"></i>
+          </button>
+      
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-collapse1">
+          <ul class="nav navbar-nav navbar-right">
+             <li class="active"><a href="#">Menu</a></li>
+			 <li><a href="../" role="button" data-toggle="modal">Logout ( <i class="fa fa-user"> </i> <span class="username"></span> )</a></li>
+           </ul>
+        </div>	
+     </div>	
+</div>
+
+<!--main-->
+<div class="container" id="main">
+    <div class="row">
+		<div class="col-sm-12 col-md-offset-2 col-md-8">
+		    <div class="row">
+				<div class="col-sm-12 col-md-12">
+				    <div class="panel panel-default">
+						<div class="panel-body">
+							<div class="col-xs-12 col-sm-3 col-md-2">
+								<img alt="avatar" class="img-responsive thumbnail" src="assets/img/face-1.jpg">
+							</div>
+							<div class="col-xs-12 col-sm-9 col-md-10">
+								<h2 class="text-center" id="date"><i class="fa fa-calendar"> </i> <span></span></h2>
+								<h4 class="text-center" id="time"><i class="fa fa-clock-o"> </i> <span></span></h4>
+							</div>
+							<div class="col-xs-12 col-sm-12 col-md-12 text-center">
+								<button class="btn btn-primary btn-sm newmail">New Mail</button>
+								<button class="btn btn-primary btn-sm checkmailstate">Check Mail</button>
+								<button class="btn btn-primary btn-sm confirmreceivedmail">Confirm Received Mail</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-sm-12 col-md-12 hidden" id="checkmailstate">
+				    <div class="well"> 
+						<form class="form" id="checkmailstateform">
+						    <h4>Check Mail State</h4>
+							<input type="hidden" id="m_method" value="GET">
+						    <input type="hidden" id="m_url" value="../api/mails/state/:id">
+						    <div class="input-group text-center">
+						        <input class="form-control input-lg" id="confirmation" name="confirmation" placeholder="Enter the Reference/Seal No. of received mail" type="text">
+						        <span class="input-group-btn"><button class="btn btn-lg btn-primary" type="submit">OK</button></span>
+						    </div>
+						</form>
+						<h4 class="mailstate" style="border:0"></h4>
+				    </div>
+				</div>
+				
+				<div class="col-sm-12 col-md-12 hidden" id="confirmreceivedmail">
+				    <div class="well"> 
+						<form class="form" id="confirmreceivedmailform">
+						    <h4>Confirm Received Mail</h4>
+							<input type="hidden" id="m_method" value="GET">
+						    <input type="hidden" id="m_url" value="../api/mails/code/">
+						    <div class="input-group text-center">
+						        <input class="form-control input-lg" id="confirm" name="confirm" placeholder="Enter the Reference/Seal No. of received mail" type="text">
+						        <span class="input-group-btn"><button class="btn btn-lg btn-primary" type="submit">OK</button></span>
+						    </div>
+						</form>
+						<div class="alert alert-danger hidden" role="alert">
+						    <span class="fa fa-exclamation-circle" aria-hidden="true"></span>
+						    <span class="sr-only">Error:</span> Something went wrong! Try again later.
+					    </div>
+				
+						<div class="alert alert-success hidden" role="alert">
+						    <span class="fa fa-exclamation-circle" aria-hidden="true"></span>
+						    <span class="sr-only">Success:</span> Mail successfully submitted.
+						</div>
+				    </div>
+				</div>
+				
+				<div class="alert alert-danger hidden" role="alert">
+						<span class="fa fa-exclamation-circle" aria-hidden="true"></span>
+						<span class="sr-only">Error:</span> Something went wrong! Try again later.
+				</div>
+				
+				<div class="alert alert-success hidden" role="alert">
+						<span class="fa fa-exclamation-circle" aria-hidden="true"></span>
+						<span class="sr-only">Success:</span> Mail successfully submitted.
+				</div>
+				
+				<div class="col-sm-6 col-md-6 hidden" id="mailtypeandcatcard">
+						<div class="panel panel-default">
+							<div class="panel-heading"><h4> Mail Destination Type</h4></div>
+							<div class="panel-body">
+								<form>
+									<div class="form-group">
+										<select id="dest_type" class="form-control">
+										    <option value="-1"></option>
+											<option value="0">Organization</option>
+											<option value="1">Others</option>
+										</select>
+									</div>
+								</form>
+							</div>
+						</div>
+				</div>
+				
+				<div class="col-sm-6 col-md-6 hidden" id="mailcatdiv">
+						<div class="panel panel-default">
+							<div class="panel-heading"><h4>Mail Category</h4></div>
+							<div class="panel-body">
+								<form>
+									<div class="form-group">
+										<select id="mail_cat" class="form-control">
+											<option value="-1"></option>
+											<option value="0">Envelope</option>
+											<option value="1">Bag</option>
+										</select>
+									</div>
+								</form>
+							</div>
+						</div>
+				</div>
+					
+				<div class="col-sm-11 col-md-12 hidden" id="refnocard">
+						<div class="panel panel-default">
+							<div class="panel-heading text-center"><h4>Reference No. <span style="font-style: italic">(Please note it down)</span></h4></div>
+							<div class="panel-body">
+								<p class="text-center" style="font-size:16px"></p>
+							</div>
+						</div>
+				</div>
+				
+				<div class="col-sm-11 col-md-12 hidden" id="maildetailscard">
+						<div class="panel panel-default">
+							<div class="panel-heading"><h4>Mail Details</h4></div>
+							<div class="panel-body">						
+								<form class="form-horizontal" role="form">
+										<div class="form-group hidden" style="padding:14px;" id="sealdiv">
+											<label class="col-sm-2 control-label">Seal No.</label>
+											<div class="col-sm-10">
+												<input type="text" class="form-control" name="sealno" id="sealno" placeholder="Enter seal no.">
+											</div>
+										</div>
+										<div class="form-group" style="padding:14px;">
+											<label class="col-sm-2 control-label">Contents</label>
+											<div class="col-sm-10">
+												<textarea rows="3" class="form-control" name="content" id="content" placeholder="Enter brief details about the contents of your mail"></textarea>
+											</div>
+										</div>
+								</form>
+							</div>
+						</div>
+				</div>
+			</div>
+		    
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="col-sm-12 col-md-offset-2 col-md-8 hidden" id="receipientdetailscard">
+		    <div class="well"> 
+				<form class="form-horizontal" role="form" id="submitform">
+				    <h4>Recipient Details</h4>
+					<input type="hidden" id="m_method" value="POST">
+				    <input type="hidden" id="m_url" value="../api/mails">
+					<input type="hidden" id="ref" name="ref">
+					<input type="hidden" id="seal" name="seal">
+					<input type="hidden" id="type" name="type">
+					<input type="hidden" id="category" name="category">
+					<div class="form-group" style="padding:14px;">
+				        <label class="col-sm-2 control-label">Name</label>
+						<div class="col-sm-10">
+						    <input type="text" class="form-control" id="name" name="name" placeholder="Enter recipient's full name">
+						</div>
+				    </div>
+					<div class="form-group" style="padding:14px;">
+				        <label class="col-sm-2 control-label">Organization</label>
+						<div class="col-sm-10">
+						    <input type="text" class="form-control" id="org_name" name="org_name" placeholder="Enter name of organization">
+						</div>
+				    </div>
+					<div class="form-group" style="padding:14px;">
+				        <label class="col-sm-2 control-label">Branch</label>
+						<div class="col-sm-10">
+						    <input type="text" class="form-control" id="branch" name="branch" placeholder="Enter branch name">
+						</div>
+				    </div>
+				    <div class="form-group" style="padding:14px;">
+				        <label class="col-sm-2 control-label">Department</label>
+						<div class="col-sm-10">
+						    <input type="text" class="form-control" id="dept" name="dept" placeholder="Enter department">
+						</div>
+				    </div>
+					<div class="form-group" style="padding:14px;">
+				        <label class="col-sm-2 control-label">Postal Address</label>
+						<div class="col-sm-10">
+						    <textarea rows="3" class="form-control" name="postal" id="postal" placeholder="Enter recipient's full postal address"></textarea>
+						</div>
+				    </div>
+					<div class="form-group" style="padding:14px;">
+						<button class="btn btn-success pull-right" type="submit">Submit</button>
+				    </div>
+			    </form>
+		   </div>
+		</div>	
+	</div>
+	
+	<!--<div class="row">-->
+	<!--	<div class="col-sm-12 col-md-offset-2 col-md-8">-->
+	<!--			<img alt="Waybbill PDF" class="img-responsive thumbnail" width="150px" src="../assets/img/pdf-icon.png">-->
+	<!--			<button class="btn btn-primary" id="downloadwaybill">-->
+	<!--				Download Waybill <i class="fa fa-download"></i>-->
+	<!--			</button>-->
+	<!--	</div>-->
+	<!--</div>-->
+      
+    <hr>
+    <div class="col-md-12 text-center"><p><a href="./">Mailroom</a></p></div>
+    <hr>
+    
+  </div>
+</div><!--/main-->
+<div class="ddmload"></div>
+<div id="ppu_menu"></div>
+<div id="content"></div>
+    
+</body></html>

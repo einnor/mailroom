@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8"> 
+        <meta charset="utf-8">
+        <title>Mailroom | CMS</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="assets/css/bootstrap.css" rel="stylesheet">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+        
+        <!--[if lt IE 9]>
+          <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        
+		<script type="text/javascript" src="assets/js/jquery.js"></script>
+		<script type="text/javascript" src="assets/js/bootstrap.js"></script>
+		<script src="../assets/plugins/bootbox.min.js"></script>
+		
+		<!--Datatables-->
+		<link rel="stylesheet" href="../../scripts/DataTables-1.10.8.c/datatables.min.css">
+		<script type="text/javascript" src="../assets/plugins/DataTables-1.10.8.c/datatables.min.js" ></script>
+		<script type="text/javascript" src="assets/js/datatable.js"></script>
+		
+		<link href="assets/css/google-plus.css" rel="stylesheet">
+		
+		<script type="text/javascript" src="../classes/newcommon.js"></script>
+		
+		<script type="text/javascript">
+		    if (getCookie('username')=='GUEST' ||  getCookie('username') ==''){ window.location.replace('../'); }	
+			$(document).ready(function() {
+				$('span.username').html(getCookie('username'))
+				$('.list-group a').on('click',function(e){
+				    var clicked=$(this).prop('id');
+					$('.loadhere').load('_tables.html #themails',function(){
+						$('#themails h4').html(clicked.toUpperCase())
+						var cols = [{ "data": "id"},{"data":"type"},{"data":"category"},{"data":"code"},{"data":"state"},{"data":"thedate"},{"":""}];
+						var url = '../api/mails/get/'.concat(clicked);
+						var oTable = datatable_init(url,cols,"#display");
+						oTable.column( 0 ).visible( false );
+						
+						$('#display').on('dblclick','tr',function(e){
+						    var mailid = oTable.rows( this ).data()[0].id
+						    window.open('mail_dashboard.html?'.concat(mailid))
+						})
+								
+						$('#display').on('click','ul.dropdown-menu li a',function(e){
+						    var state = $(this).prop('id');
+							var jsondata = {"state":state};
+							var fdata=JSON.stringify(jsondata);
+							var rec_id = $(this).parents('div.btn-group').prop('id')
+							var dataR=testAjax("PUT",fdata,"../api/mails/state/"+rec_id,"application/json");
+							dataR.success(function(data){
+								if(data.response=="success"){bootbox.alert("Success! Tracker successfully updated");}
+								else{bootbox.alert(" Failed! SOmething went wrong. Try again later.");}
+							})
+							oTable.ajax.reload();return false;
+						})
+					})
+				})
+				$('.list-group a#submitted').click();
+			});
+		</script>
+    </head>
+    
+    <body class="">
+        <div class="navbar navbar-fixed-top header">
+		    <div class="col-md-12">
+				<div class="navbar-header"> 
+                    <a href="./" class="navbar-brand" style="font-weight:bold;">Mailroom > <small style="font-weight:100;">CMS</small></a>
+				    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse1">
+						<i class="fa fa-bars"></i>
+				    </button>
+				</div>
+				<div class="collapse navbar-collapse" id="navbar-collapse1">
+				    <ul class="nav navbar-nav navbar-right">
+						<li class="active"><a href="#">Menu</a></li>
+						<li><a href="../" role="button" data-toggle="modal">Logout ( <i class="fa fa-user"> </i> <span class="username"></span> )</a></li>
+				    </ul>
+				</div>	
+		    </div>	
+		</div>
+
+		<!--main-->
+		<div class="container" id="main">
+			<div class="row">
+				<!--Menu-->
+				<div class="col-sm-12 col-md-2">
+					<div class="row">
+						<div class="col-sm-12 col-md-12">
+							<div class="list-group">
+								<span href="#" class="list-group-item active"><i class="fa fa-list"> </i> Mail Menu</span>
+								<!--<a href="#all" id="all" class="list-group-item">-->
+								<!--	<i class="fa fa-list"> All </i>-->
+								<!--</a>-->
+								<a href="#submitted" id="submitted" class="list-group-item">
+									<i class="fa fa-user"> Submitted </i>
+								</a>
+								<a href="#sighted" id="sighted" class="list-group-item">
+									<i class="fa fa-eye"> Sighted </i>
+								</a>
+								<a href="#missing" id="missing" class="list-group-item">
+									<i class="fa fa-star-o"> Mising </i>
+								</a>
+								<a href="#exception" id="exception" class="list-group-item">
+									<i class="fa fa-star-half-o"> Exception </i>
+								</a>
+								<a href="#dispatched" id="dispatched" class="list-group-item">
+									<i class="fa fa-star-half-o"> Dispatched </i>
+								</a>
+								<a href="#delivered" id="delivered" class="list-group-item">
+									<i class="fa fa-star"> Delivered </i>
+								</a>
+								<a href="#received" id="received" class="list-group-item">
+									<i class="fa fa-thumbs-up"> Received </i>
+								</a>
+								<!--<a href="#sent" id="sent" class="list-group-item">-->
+								<!--	<i class="fa fa-check-square-o"> Sent </i>-->
+								<!--</a>-->
+							</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="col-sm-12 col-md-10">
+					<div class="row">
+						<div class="col-sm-12 col-md-12">
+							<div class="panel panel-default">
+								<div class="panel-body loadhere">
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			  
+			<hr>
+			<div class="col-md-12 text-center"><p><a href="./">Mailroom</a></p></div>
+			<hr>
+		  </div>
+		</div><!--/main-->        
+    
+    </body>
+</html>

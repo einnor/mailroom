@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8"> 
+        <meta charset="utf-8">
+        <title>Mailroom | Admin</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="assets/css/bootstrap.css" rel="stylesheet">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+        
+        <!--[if lt IE 9]>
+          <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        
+		<script type="text/javascript" src="assets/js/jquery.js"></script>
+		<script type="text/javascript" src="assets/js/bootstrap.js"></script>
+		<script src="../assets/plugins/bootbox.min.js"></script>
+		
+		<!--Datatables-->
+		<link rel="stylesheet" href="../../scripts/DataTables-1.10.8.c/datatables.min.css">
+		<script type="text/javascript" src="../assets/plugins/DataTables-1.10.8.c/datatables.min.js" ></script>
+		<script type="text/javascript" src="assets/js/datatable.js"></script>
+		
+		<link href="assets/css/google-plus.css" rel="stylesheet">
+		
+		<script type="text/javascript" src="../classes/newcommon.js"></script>
+		
+		<script type="text/javascript">
+		    if (getCookie('username')=='GUEST' ||  getCookie('username') ==''){ window.location.replace('../'); }	
+			$(document).ready(function() {
+				
+				function submitform(mform){ 
+						var fdata=JSON.stringify(mform.serializeObject());
+						var m_method=mform.find('#m_method').val();var response='';
+						var dataR = testAjax( m_method, fdata, mform.find('#m_url').val()," application/json");
+						dataR.success(function (data) {
+						    if(data.response=="fail"){
+								$('.alert-danger').removeClass('hidden');setTimeout(function(){ $('.alert-danger').hide(); }, 3000);
+							}
+							if(data.response=="success"){
+								mform[0].reset();
+								$('.alert-success').removeClass('hidden');setTimeout(function(){ $('.alert-success').hide(); }, 3000);
+							}
+						});
+						return response;
+				}; //Submit Form
+
+				$('span.username').html(getCookie('username'))
+				$('.newuser').on('click',function(e){
+				    $( "#ppu_menu" ).load( "_popups.html #newuser", function(e) {
+						var PPU_message=$( "#ppu_menu" ).html();$( "#ppu_menu" ).children().remove();/*DO NOTY STORE UNNECESSARY DATA*/
+						bootbox.dialog({
+							title: 'NEW USER',
+							message:PPU_message,
+							 buttons: {
+								success: {
+									label: "Save User <i class='fa fa-user'></i>",
+									className: "btn-success",
+									callback: function (event) {
+										submitform( $('.dlgform') );
+										//$('.dlgform').submit(function (ev) { ev.preventDefault();ev.stopPropagation(); submitform( $(this) ); return false; });
+									}
+								}
+							} 
+						});
+				    });
+				})
+				$('.list-group a').on('click',function(e){
+				    var clicked=$(this).prop('id');
+					$('.loadhere').load('_tables.html #theusers',function(){
+						$('#theusers h4').html(clicked.toUpperCase())
+						var cols = [{ "data": "id"},{"data":"name"},{"data":"dept"},{"data":"email"},{"data":"role"}];
+						var url = '../api/users/'.concat(clicked);
+						var oTable = datatable_init(url,cols,"#display");
+						oTable.column( 0 ).visible( false );
+					})
+				})
+				$('.list-group a#all').click();
+			});
+		</script>
+    </head>
+    
+    <body class="">
+        <div class="navbar navbar-fixed-top header">
+		    <div class="col-md-12">
+				<div class="navbar-header"> 
+                    <a href="./" class="navbar-brand" style="font-weight:bold;">Mailroom > <small style="font-weight:100;">CMS</small></a>
+				    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse1">
+						<i class="fa fa-bars"></i>
+				    </button>
+				</div>
+				<div class="collapse navbar-collapse" id="navbar-collapse1">
+				    <ul class="nav navbar-nav navbar-right">
+						<li class="active"><a href="#">Menu</a></li>
+						<li><a href="../" role="button" data-toggle="modal">Logout ( <i class="fa fa-user"> </i> <span class="username"></span> )</a></li>
+				    </ul>
+				</div>	
+		    </div>	
+		</div>
+
+		<!--main-->
+		<div class="container" id="main">
+			<div class="row">
+				<!--Menu-->
+				<div class="col-sm-12 col-md-2">
+					<div class="row">
+						<div class="col-sm-12 col-md-12">
+							<div class="list-group">
+								<span href="#" class="list-group-item active"><i class="fa fa-users"> </i> Users Menu</span>
+								<a href="#all" id="all" class="list-group-item">
+									<i class="fa fa-list"> All</i>
+								</a>
+								<a href="#common" id="common" class="list-group-item">
+									<i class="fa fa-user-md"> Common </i>
+								</a>
+								<a href="#mailroom" id="mailroom" class="list-group-item">
+									<i class="fa fa-building"> Mailroom </i>
+								</a>
+								<a href="#admin" id="admin" class="list-group-item">
+									<i class="fa fa-connectdevelop"> Admin </i>
+								</a>
+							</div>
+							<button class="btn btn-primary newuser" style="width:100%;"><i class="fa fa-plus-circle"> </i> New User</button>
+						</div>
+					</div>
+				</div>
+				
+				<div class="col-sm-12 col-md-10">
+					<div class="row">
+						<div class="col-sm-12 col-md-12">
+							<div class="panel panel-default">
+								
+								<div class="alert alert-danger container hidden" role="alert">
+										<span class="fa fa-exclamation-circle" aria-hidden="true"></span>
+										<span class="sr-only">Error:</span> Something went wrong! Try again later.
+								</div>
+								
+								<div class="alert alert-success container hidden" role="alert">
+										<span class="fa fa-exclamation-circle" aria-hidden="true"></span>
+										<span class="sr-only">Success:</span> User was created successfully!.
+								</div>
+								
+								<div class="panel-body loadhere">
+									
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			  
+			<hr>
+			<div class="col-md-12 text-center"><p><a href="./">Mailroom</a></p></div>
+			<hr>
+		  </div>
+		</div><!--/main-->        
+		<div class="ddmload"></div>
+		<div id="ppu_menu"></div>
+    </body>
+</html>

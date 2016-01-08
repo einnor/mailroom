@@ -1,0 +1,47 @@
+<div class="row" id="newuser">
+	<div class="col-md-12">
+		<form class="dlgform">
+			<input type="hidden" id="m_method"  value="POST">
+            <input type="hidden" id="m_url" value="../api/users">
+			<div class="col-md-12">
+				<div class="form-group">
+					<label for="name">Name</label>
+					<input type="text" class="form-control" id="name" name="name" placeholder="Enter name of user" required>
+				 </div>
+			</div>
+            <div class="col-md-12">
+				<div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" placeholder="Enter email of user" required>
+                </div> 
+			</div>
+			<div class="col-md-12">
+				<div class="form-group">
+                    <label for="dept">Department</label>
+                    <select class="form-control" id="dept" name="dept" required>
+                        <option value="IT">IT</option>
+                        <option value="HR">HR</option>
+                        <option value="Accounting">Accounting</option>
+                        <option value="Production">Production</option>
+                        <option value="Research">Research</option>
+                        <option value="Engineering">Engineering</option>
+                        <option value="Sales">Sales</option>
+                        <option value="Marketing">Marketing</option>
+                    </select>
+				</div>
+			</div>
+            <div class="col-md-12">
+				<div class="form-group">
+                    <label for="role">Role</label>
+                    <select class="form-control" id="role" name="role" required>
+                        <option value="0">Common</option>
+                        <option value="1">Mail Room</option>
+                        <option value="2">Administrator</option>
+                    </select>
+				</div>
+			</div>
+			<button type="submit" class="btn btn-primary pull-right btnnext btnsbm hidden"> Save User <i class="fa fa-user"></i></button>
+            <div class="uprog"></div>
+		</form>
+	</div>
+</div>

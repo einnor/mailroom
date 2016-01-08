@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+        <meta http-equiv="content-type" content="text/html; charset=UTF-8"> 
+        <meta charset="utf-8">
+        <title>Mailroom | Mail</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <link href="assets/css/bootstrap.css" rel="stylesheet">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+        
+        <!--[if lt IE 9]>
+          <script src="//html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+        
+		<script type="text/javascript" src="assets/js/jquery.js"></script>
+		<script type="text/javascript" src="assets/js/bootstrap.js"></script>
+		<script src="../assets/plugins/bootbox.min.js"></script>
+		
+		<!--Datatables-->
+		<link rel="stylesheet" href="../../scripts/DataTables-1.10.8.c/datatables.min.css">
+		<script type="text/javascript" src="../assets/plugins/DataTables-1.10.8.c/datatables.min.js" ></script>
+		<script type="text/javascript" src="assets/js/datatable.js"></script>
+		
+		<link href="../assets/css/chartist.min.css" rel="stylesheet">
+        <link href="assets/css/google-plus.css" rel="stylesheet">
+		
+        <script type="text/javascript" src="../assets/plugins/chartist.min.js"></script>
+		<script type="text/javascript" src="../classes/newcommon.js"></script>
+		
+		<script type="text/javascript">
+		    if (getCookie('username')=='GUEST' ||  getCookie('username') ==''){ window.location.replace('../'); }	
+			$(document).ready(function() {
+				$('span.username').html(getCookie('username'))
+                var mailid = window.location.href.split('?')[1]
+                
+                var dataR1=testAjax("GET","","../api/mails/".concat(mailid),"application/json");
+                dataR1.success(function(data){
+                    $.each(data.response,function(i,item){
+                        $("#sender").html(item.sender);
+                        $("#recipient").html(item.recipient);
+                        $("#organization").html(item.organization)
+                        $("#branch").html(item.branch)
+                        $("#dept").html(item.dept)
+                        $("#postal").html(item.postal)
+                        switch(item.type){
+                            case "0":
+                                $("#type").html("Organization");
+                                break;
+                            case "1":
+                                $("#type").html("Other")
+                                break;
+                        }
+                        switch(item.category){
+                            case "0":
+                                $("#category").html("Envelope")
+                                break;
+                            case "1":
+                                $("#category").html("Bag")
+                                break;
+                        }
+                        switch(item.state){
+                            case "0":
+                                $("#state").html("Submitted")
+                                break;
+                            case "1":
+                                $("#state").html("Sighted")
+                                break;
+                            case "2":
+                                $("#state").html("Missing")
+                                break;
+                            case "3":
+                                $("#state").html("Exception")
+                                break;
+                            case "4":
+                                $("#state").html("Dispatched")
+                                break;
+                            case "5":
+                                $("#state").html("Delivered")
+                                break;
+                            case "6":
+                                $("#state").html("Received")
+                                break;
+                        }
+                        $("#code").html(item.code)
+                    })
+                })
+                
+                var dates=new Array(),days=new Array(),y_axis=new Array();
+                var dataR=testAjax("GET","","../api/mails/track/".concat(mailid),"application/json");
+                dataR.success(function(data){
+                    $.each(data.dates[0],function(i,item){
+                        dates.push(item);
+                    })
+                    $.each(data.days[0],function(i,item){
+                        days.push(item);
+                    })
+                })
+                days = days.map(Number);
+                days.splice(0,0,0);
+                console.log(days)
+				
+                /* Add a basic data series with six labels and values */
+                var data = {
+                  labels: dates/*['1', '2', '3', '4', '5', '6']*/,
+                  series: [
+                    {
+                      data: days/*[1, 2, 3, 5, 8, 13]*/
+                    }
+                  ]
+                };
+                
+                /* Set some base options (settings will override the default settings in Chartist.js *see default settings*). We are adding a basic label interpolation function for the xAxis labels. */
+                var options = {
+                  axisX: {
+                    labelInterpolationFnc: function(value) {
+                      return value;
+                    }
+                  }
+                };
+                
+                /* Now we can specify multiple responsive settings that will override the base settings based on order and if the media queries match. In this example we are changing the visibility of dots and lines as well as use different label interpolations for space reasons. */
+                var responsiveOptions = [
+                  ['screen and (min-width: 641px) and (max-width: 1024px)', {
+                    showPoint: false,
+                    axisX: {
+                      labelInterpolationFnc: function(value) {
+                        return value;
+                      }
+                    }
+                  }],
+                  ['screen and (max-width: 640px)', {
+                    showLine: false,
+                    axisX: {
+                      labelInterpolationFnc: function(value) {
+                        return value;
+                      }
+                    }
+                  }]
+                ];
+                
+                /* Initialize the chart with the above settings */
+                new Chartist.Line('#my-chart', data, options, responsiveOptions);
+			});
+		</script>
+    </head>
+    
+    <body class="">
+        <div class="navbar navbar-fixed-top header">
+		    <div class="col-md-12">
+				<div class="navbar-header"> 
+                    <a href="./" class="navbar-brand" style="font-weight:bold;">Mailroom > <small style="font-weight:100;">CMS</small></a>
+				    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse1">
+						<i class="fa fa-bars"></i>
+				    </button>
+				</div>
+				<div class="collapse navbar-collapse" id="navbar-collapse1">
+				    <ul class="nav navbar-nav navbar-right">
+						<li class="active"><a href="#">Menu</a></li>
+						<li><a href="../" role="button" data-toggle="modal">Logout ( <i class="fa fa-user"> </i> <span class="username"></span> )</a></li>
+				    </ul>
+				</div>	
+		    </div>	
+		</div>
+
+		<!--main-->
+		<div class="container" id="main">
+			<div class="row">
+				<div class="col-sm-12 col-md-12">
+					<div class="row">
+                        <div class="col-sm-12 col-md-12">
+							<div class="panel panel-default">
+								<div class="panel-body loadhere">
+                                    <h4>Mail Details</h4>
+                                    <div class="row">
+                                        <div class="col-sm-12 col-md-6">
+                                            <h5>Sender</h5>
+                                            <label class="col-sm-4">Name :</label>
+                                            <p class="col-sm-8" id="sender"></p>
+                                            
+                                            <br/><br/>
+                                            <h5>Mail</h5>
+                                            <label class="col-sm-4">Type :</label>
+                                            <p class="col-sm-8" id="type"></p>
+                                            
+                                            <label class="col-sm-4">Category :</label>
+                                            <p class="col-sm-8" id="category"></p>
+                                            
+                                            <label class="col-sm-4">Code :</label>
+                                            <p class="col-sm-8" id="code"></p>
+                                            
+                                            <label class="col-sm-4">State :</label>
+                                            <p class="col-sm-8" id="state"></p>
+                                        </div>
+                                        
+                                        <div class="col-sm-12 col-md-6">
+                                            <h5>Recipient</h5>
+                                            <label class="col-sm-4">Name :</label>
+                                            <p class="col-sm-8" id="recipient"></p>
+                                            
+                                            <label class="col-sm-4">Org. :</label>
+                                            <p class="col-sm-8" id="organization"></p>
+                                            
+                                            <label class="col-sm-4">Branch :</label>
+                                            <p class="col-sm-8" id="branch"></p>
+                                            
+                                            <label class="col-sm-4">Department :</label>
+                                            <p class="col-sm-8" id="dept"></p>
+                                            
+                                            <label class="col-sm-4">Postal :</label>
+                                            <p class="col-sm-8" id="postal"></p>
+                                        </div>
+                                        
+                                        <div class="col-sm-12 col-md-6">
+                                            
+                                        </div>
+                                    </div>
+								</div>
+							</div>
+						</div>
+                        
+						<div class="col-sm-12 col-md-12">
+							<div class="panel panel-default">
+								<div class="panel-body loadhere">
+                                    <h4>Mail-Tracker Data</h4>
+									<div id="my-chart"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			  
+			<hr>
+			<div class="col-md-12 text-center"><p><a href="./">Mailroom</a></p></div>
+			<hr>
+		  </div>
+		</div><!--/main-->        
+    
+    </body>
+</html>
